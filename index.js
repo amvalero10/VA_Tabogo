@@ -5,19 +5,95 @@ require([
     "esri/widgets/Legend",
     "esri/widgets/Home",
     "esri/widgets/Slider",
-    "esri/widgets/Fullscreen"
-  ], (Map, FeatureLayer, MapView, Legend, Home, Slider, Fullscreen) => {
+    "esri/widgets/Fullscreen",
+    "esri/widgets/LayerList",
+    "esri/widgets/Expand",
 
-    const layer = new FeatureLayer({
+  ], (Map, FeatureLayer, MapView, Legend, Home, Slider, Fullscreen,LayerList,Expand) => {
+
+
+     //--------------------------------------------------------------------------
+    //
+    //  Capas Lunes a Domingo
+    //
+    //--------------------------------------------------------------------------
+
+    const layer_Lunes = new FeatureLayer({
         portalItem: {
           //id: "b41d2298d0a74601b73c35082925d35e"
-          id:"e5fa1777f85b4473bc8f4c2420d1f342"
+          id: "5bb00d89ea6a4307bb99f6cea97a2970"
         },
-        title: "Tweet",
+        title: "Lunes",
         minScale: 21211172223.819286,
         effect: "bloom(2.5 0 0.5)"
-      }
-      );
+      });
+
+      const layer_Martes = new FeatureLayer({
+        portalItem: {
+          id: "18e76e5c5433403eabfed1ecb19f8cfe"
+        },
+        title: "Martes",
+        minScale: 21211172223.819286,
+        effect: "bloom(2.5 0 0.5)"
+      });
+
+      const layer_Miercoles = new FeatureLayer({
+        portalItem: {
+          id: "45bc7ad57616494285de95f5a3c4919d"
+        },
+        title: "Miercoles",
+        minScale: 21211172223.819286,
+        effect: "bloom(2.5 0 0.5)"
+      });
+
+      const layer_Jueves = new FeatureLayer({
+        portalItem: {
+          id: "9702899b9fe04c03aa8f356c6d7eeaf8"
+        },
+        title: "Jueves",
+        minScale: 21211172223.819286,
+        effect: "bloom(2.5 0 0.5)"
+      });
+
+      const layer_Viernes = new FeatureLayer({
+        portalItem: {
+          id: "02914582f8434d3b987f176139986fee"
+        },
+        title: "Viernes",
+        minScale: 21211172223.819286,
+        effect: "bloom(2.5 0 0.5)"
+      });
+
+      const layer_Sabado = new FeatureLayer({
+        portalItem: {
+          id: "e4a65cc84c67463483d1cb97427ff5c7"
+        },
+        title: "Sabado",
+        minScale: 21211172223.819286,
+        effect: "bloom(2.5 0 0.5)"
+      });
+
+      const layer_Domingo = new FeatureLayer({
+        portalItem: {
+          id: "afca024a08d74fe4847faf1a8cdafc01"
+        },
+        title: "Domingo",
+        minScale: 21211172223.819286,
+        effect: "bloom(2.5 0 0.5)",
+      });
+
+
+      //Apagar las capas en la lista del layerList
+      layer_Domingo.visible = false;
+      layer_Sabado.visible = false;
+      layer_Viernes.visible = false;
+      layer_Jueves.visible = false;
+      layer_Miercoles.visible = false;
+      layer_Martes.visible = false;
+
+
+
+
 
       const map = new Map({
         basemap: {
@@ -25,18 +101,25 @@ require([
            id: "4f2e99ba65e34bb8af49733d9778fb8e"
           }
         },
-        layers: [layer]
+        //layers: [layer_Lunes,layer_Martes]
       });
-
+      map.add(layer_Domingo)
+      map.add(layer_Sabado)
+      map.add(layer_Viernes)
+      map.add(layer_Jueves)
+      map.add(layer_Miercoles)
+      map.add(layer_Martes)
+      map.add(layer_Lunes)
       
+
       const view = new MapView({
         map: map,
         container: "viewDiv",
-        center: [ -74.08175,4.60971], //Bogota
+        center: [ -74.10975,4.64971], //Bogota
         zoom: 11,
         constraints: {
           //snapToZoom: false,
-          //minScale: 82223.819286
+          minScale: 302223.819286
         },
   
   
@@ -50,6 +133,14 @@ require([
 
 
 
+      const layerList = new LayerList({
+        view: view
+      });
+      layerList.visibleElements = {
+        statusIndicators: true
+      };
+
+      
 
 
  //--------------------------------------------------------------------------
@@ -132,18 +223,20 @@ slider.tickConfigs = [{
         }
       });
 
+
+
       //botones y etiquetas en esquinas
       view.ui.empty("top-left");
       view.ui.add(titleDiv, "top-left"); // titulo
       view.ui.add( new Home({ view: view}),"top-left"); //boton de home
       view.ui.add( new Legend({view: view}),"bottom-left"); //etiqueta de leyenda
-      view.ui.add( new Fullscreen({ view: view, element: applicationDiv }),"top-right"); //boton de pantalla completa
+      view.ui.add( new Fullscreen({ view: view, element: applicationDiv }),"top-left"); //boton de pantalla completa
+      //view.ui.add( new Expand({ view: view,content: layerList,expanded: false}),"top-right"  ); //boton expandible para los dias
+      view.ui.add(layerList, "top-right"); // selector de capas
 
 
-    // When the layerview is available, setup hovering interactivity
-    //view.whenLayerView(layer).then(setupHoverTooltip);
 
-    // Starts the application by visualizing year 1984
+    // Starts the application
     setYear(00);
 
 
@@ -159,32 +252,19 @@ slider.tickConfigs = [{
     function setYear(value) {
         sliderValue.innerHTML = Math.floor(value);
         slider.viewModel.setValue(0, value);
-        layer.renderer = createRenderer(value);
+        //layer.renderer = createRenderer(value);
+        layer_Lunes.renderer = createRenderer(value);
+        layer_Martes.renderer = createRenderer(value);
+        layer_Miercoles.renderer = createRenderer(value);
+        layer_Jueves.renderer = createRenderer(value);
+        layer_Viernes.renderer = createRenderer(value);
+        layer_Sabado.renderer = createRenderer(value);
+        layer_Domingo.renderer = createRenderer(value);
       }
 
 
-    
+  
 
-
-
-
-  /**
-     * Returns a renderer with a color visual variable driven by the input
-     * year. The selected year will always render buildings built in that year
-     * with a light blue color. Buildings built 20+ years before the indicated
-     * year are visualized with a pink color. Buildings built within that
-     * 20-year time frame are assigned a color interpolated between blue and pink.
-     */
- 
-
-
-
-    // type: "simple",
-        // symbol: {
-        //   type: "simple-fill",
-        //   color: "rgb(0, 0, 0)",
-        //   outline: null
-        // }
 
    function createRenderer(year){
 
@@ -196,7 +276,8 @@ slider.tickConfigs = [{
         },
         {
           opacity: 0,
-          value: year + 1
+          //value: year + 0.2
+          value: year + 0.5
         }
       ];
 
@@ -205,17 +286,14 @@ slider.tickConfigs = [{
         type: "simple",  // autocasts as new SimpleRenderer()
         symbol: {
           type: "simple-marker",  // autocasts as new SimpleMarkerSymbol()
-          size: 9,
+          size: 2,
           color: "rgb(0, 0, 0)",
           outline: null
-
         //   outline: {  // autocasts as new SimpleLineSymbol()
         //     width: 0.5,
         //     color: "white"
         //   }
-
         },
-
         visualVariables: [
             {
               type: "opacity",
@@ -229,37 +307,34 @@ slider.tickConfigs = [{
               type: "color",
               field: "TIME",
               legendOptions: {
-                title: ""
+                title: "Tweet"
               },
               stops: [
                 {
                   value: year,
                   color: "#0ff",
-                  label: "Nuevo " + Math.floor(year)
-                },
+                  //label: "Nuevo " + Math.floor(year)
+                  label: "Nuevo"
+                }
+                ,
                 {
-                  value: year - 1,
+                  value: year - 0.6,
                   color: "#f0f",
-                  label: "" + (Math.floor(year) - 1)
+                  //color: "#404",
+                  //label: "" + (Math.floor(year) )
+                  label: "Antiguo"
                 },
                 {
-                  value: year - 5,
-                  color: "#404",
-                  label: "Antes de  " + (Math.floor(year) - 5)
+                  value: year - 0.9,
+                  //color: "#404",
+                  opacity: 1,
+                  color: "rgb(31,33,34)",
+                  //label: "Antes de  " + (Math.floor(year))
                 }
               ]
             }
           ]
-
-
-      
-
-
-
     }
-
-
-
    }
 
 
@@ -323,7 +398,7 @@ slider.tickConfigs = [{
       // Update at 30fps
       setTimeout(() => {
         requestAnimationFrame(frame);
-      }, 1000 / 600);
+      }, 1000 / 50);
     };
 
     frame();
